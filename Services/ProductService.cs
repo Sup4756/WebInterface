@@ -150,6 +150,22 @@ namespace ShopInterface1.Services
             },
             new Product
             {
+                Id = 17,
+                Name = "Nasser SL 72",
+                Description = "Thiết kế đen nhẹ nhàng dành cho chủ.",
+                Price = 2300000,
+                ImageUrl = "https://placehold.co/600x400?text=Adidas+SL72"
+            },
+            new Product
+            {
+                Id = 17,
+                Name = "Tust TLK",
+                Description = "Thiết kế xoắn nhẹ nhàng cho cảm giác khác biệt.",
+                Price = 2300000,
+                ImageUrl = "https://placehold.co/600x400?text=Adidas+SL72"
+            },
+            new Product
+            {
                 Id = 18,
                 Name = "New Balance 327",
                 Description = "Thiết kế lấy cảm hứng từ giày chạy bộ cổ điển.",

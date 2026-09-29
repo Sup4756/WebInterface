@@ -1,86 +1,278 @@
 ﻿@page "/"
 
-<PageTitle>Shop</PageTitle>
+@using ShopInterface1.Models
+@using ShopInterface1.Services
 
-<div class="shop-container">
+@inject ProductService ProductService
+@inject CartService CartService
 
-    <section class="hero">
-        <h1>MY SHOP</h1>
+<PageTitle>MYSHOP | Sneaker Store</PageTitle>
+
+
+<!-- HERO -->
+
+<section class="home-hero">
+
+    <div class="hero-content">
+
+        <span class="hero-label">
+            Lorem Ipsum
+        </span>
+
+        <h1>
+            CHÚNG TÔI BÁN GIÀY<br />
+            <span>THEO CÁCH CỦA BẠN.</span>
+        </h1>
 
         <p>
-            Khám phá những sản phẩm mới nhất
+            Những đôi sneaker CHƯA được lựa chọn cho
+            bạn.
         </p>
 
-        <button class="shop-button">
-            Mua sắm ngay
-        </button>
-    </section>
+        <div class="hero-actions">
+
+            <a href="/products"
+               class="hero-primary">
+                Xem sản phẩm
+                <span>→</span>
+            </a>
+
+            <a href="#featured"
+               class="hero-secondary">
+                Xem nổi bật
+            </a>
+
+        </div>
+
+    </div>
 
 
-    <section class="products">
+    <div class="hero-visual">
 
-        <h2>Sản phẩm nổi bật</h2>
+        <div class="hero-circle"></div>
 
-        <div class="product-grid">
+        <div class="hero-product">
 
-            <div class="product-card">
+            <span class="hero-product-small">
+                FEATURED
+            </span>
 
-                <div class="product-image">
-                    PRODUCT IMAGE
-                </div>
+            <h2>NIKE</h2>
 
-                <h3>Nike Air Max</h3>
+            <h3>AIR MAX</h3>
 
-                <p>Giày thể thao Nike Air Max</p>
-
-                <strong>2.490.000 đ</strong>
-
-                <button>
-                    Thêm vào giỏ
-                </button>
-
+            <div class="hero-shoe">
+                AIR MAX
             </div>
 
+            <div class="hero-product-bottom">
 
-            <div class="product-card">
+                <span>NEW DROP</span>
 
-                <div class="product-image">
-                    PRODUCT IMAGE
-                </div>
-
-                <h3>Adidas Ultraboost</h3>
-
-                <p>Giày chạy bộ Adidas</p>
-
-                <strong>3.200.000 đ</strong>
-
-                <button>
-                    Thêm vào giỏ
-                </button>
-
-            </div>
-
-
-            <div class="product-card">
-
-                <div class="product-image">
-                    PRODUCT IMAGE
-                </div>
-
-                <h3>New Balance 530</h3>
-
-                <p>Phong cách retro</p>
-
-                <strong>2.100.000 đ</strong>
-
-                <button>
-                    Thêm vào giỏ
-                </button>
+                <strong>
+                    2.490.000 đ
+                </strong>
 
             </div>
 
         </div>
 
-    </section>
+    </div>
 
-</div>
+</section>
+
+
+<!-- BRANDS -->
+
+<section class="brand-strip">
+
+    <span>NIKE</span>
+
+    <span>ADIDAS</span>
+
+    <span>NEW BALANCE</span>
+
+    <span>JORDAN</span>
+
+    <span>CONVERSE</span>
+
+</section>
+
+
+<!-- FEATURED PRODUCTS -->
+
+<section id="featured"
+         class="home-section">
+
+    <div class="section-heading">
+
+        <div>
+
+            <span class="section-label">
+                FEATURED
+            </span>
+
+            <h2>Sản phẩm nổi bật</h2>
+
+        </div>
+
+        <a href="/products"
+           class="view-all">
+            Xem tất cả
+            <span>→</span>
+        </a>
+
+    </div>
+
+
+    <div class="home-product-grid">
+
+        @foreach (var product in FeaturedProducts)
+        {
+            <article class="home-product-card">
+
+                <a href="/products/@product.Id"
+                   class="home-product-image">
+
+                    <img src="@product.ImageUrl"
+                         alt="@product.Name" />
+
+                    <span class="new-badge">
+                        NEW
+                    </span>
+
+                </a>
+
+
+                <div class="home-product-content">
+
+                    <span class="home-category">
+                        SNEAKER
+                    </span>
+
+                    <a href="/products/@product.Id"
+                       class="home-product-name">
+                        @product.Name
+                    </a>
+
+                    <p>
+                        @product.Description
+                    </p>
+
+
+                    <div class="home-product-footer">
+
+                        <strong>
+                            @product.Price.ToString("N0") đ
+                        </strong>
+
+                        <button @onclick="() => AddToCart(product)"
+                                title="Thêm vào giỏ">
+                            +
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </article>
+        }
+
+    </div>
+
+</section>
+
+
+<!-- PROMO -->
+
+<section class="home-promo">
+
+    <div class="promo-content">
+
+        <span>NEW SEASON</span>
+
+        <h2>
+            PHONG CÁCH MỚI.<br />
+            NĂNG LƯỢNG MỚI.
+        </h2>
+
+        <p>
+            Khám phá những thiết kế mới nhất
+            trong bộ sưu tập.
+        </p>
+
+        <a href="/products">
+            Mua ngay →
+        </a>
+
+    </div>
+
+    <div class="promo-decoration">
+
+        <span>2026</span>
+
+    </div>
+
+</section>
+
+
+<!-- BENEFITS -->
+
+<section class="benefits">
+
+    <div class="benefit-item">
+
+        <strong>01</strong>
+
+        <div>
+            <h3>Giao hàng miễn phí</h3>
+            <p>Cho đơn hàng từ 999.000.000 đ</p>
+        </div>
+
+    </div>
+
+    <div class="benefit-item">
+
+        <strong>02</strong>
+
+        <div>
+            <h3>Đổi trả hơi dễ dàng</h3>
+            <p>Hỗ trợ đổi trả trong 2 ngày</p>
+        </div>
+
+    </div>
+
+    <div class="benefit-item">
+
+        <strong>03</strong>
+
+        <div>
+            <h3>Sản phẩm chưa chắc chính hãng</h3>
+            <p>Không cam kết chất lượng sản phẩm</p>
+        </div>
+
+    </div>
+
+</section>
+
+
+@code {
+
+    private List<Product> FeaturedProducts = new();
+
+
+    protected override void OnInitialized()
+    {
+        FeaturedProducts = ProductService
+            .GetProducts()
+            .Take(3)
+            .ToList();
+    }
+
+
+    private void AddToCart(Product product)
+    {
+        CartService.AddToCart(product);
+    }
+
+}
