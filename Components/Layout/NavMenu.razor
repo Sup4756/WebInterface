@@ -1,0 +1,61 @@
+﻿@using ShopInterface1.Services
+@inject CartService CartService
+@implements IDisposable
+
+<header class="store-header">
+
+    <nav class="store-navbar">
+
+        <a href="/" class="store-logo">
+            MY<span>SHOP</span>
+        </a>
+
+        <div class="store-links">
+
+            <a href="/">
+                Trang chủ
+            </a>
+
+            <a href="/products">
+                Sản phẩm
+            </a>
+
+            <a href="#">
+                Hàng mới
+            </a>
+
+        </div>
+
+        <a href="/cart"
+           class="cart-link">
+
+            <span>Giỏ hàng</span>
+
+            <span class="cart-count">
+                @CartService.GetTotalQuantity()
+            </span>
+
+        </a>
+
+    </nav>
+
+</header>
+
+@code {
+
+    protected override void OnInitialized()
+    {
+        CartService.OnChange += CartChanged;
+    }
+
+    private void CartChanged()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        CartService.OnChange -= CartChanged;
+    }
+
+}

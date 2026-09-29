@@ -1,0 +1,97 @@
+﻿@page "/products/{Id:int}"
+
+@using ShopInterface1.Models
+@using ShopInterface1.Services
+
+@inject ProductService ProductService
+@inject CartService CartService
+@inject NavigationManager Navigation
+
+<PageTitle>Chi tiết sản phẩm</PageTitle>
+
+@if (product == null)
+{
+    <div class="shop-page">
+
+        <h2>Không tìm thấy sản phẩm</h2>
+
+        <a href="/products">
+            Quay lại danh sách
+        </a>
+
+    </div>
+}
+else
+{
+    <div class="shop-page">
+
+        <button class="back-button"
+                @onclick="GoBack">
+            ← Quay lại
+        </button>
+
+        <div class="product-detail">
+
+            <div class="detail-image">
+
+                <img src="@product.ImageUrl"
+                     alt="@product.Name" />
+
+            </div>
+
+            <div class="detail-content">
+
+                <span class="product-label">
+                    SNEAKER
+                </span>
+
+                <h1>@product.Name</h1>
+
+                <h2>
+                    @product.Price.ToString("N0") đ
+                </h2>
+
+                <p>
+                    @product.Description
+                </p>
+
+                <button class="add-cart-large"
+                        @onclick="AddToCart">
+
+                    Thêm vào giỏ hàng
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+}
+
+@code {
+
+    [Parameter]
+    public int Id { get; set; }
+
+    private Product? product;
+
+    protected override void OnParametersSet()
+    {
+        product = ProductService.GetProductById(Id);
+    }
+
+    private void AddToCart()
+    {
+        if (product != null)
+        {
+            CartService.AddToCart(product);
+        }
+    }
+
+    private void GoBack()
+    {
+        Navigation.NavigateTo("/products");
+    }
+
+}

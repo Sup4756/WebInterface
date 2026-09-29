@@ -1,0 +1,141 @@
+﻿@page "/cart"
+
+@using ShopInterface1.Models
+@using ShopInterface1.Services
+
+@inject CartService CartService
+
+<PageTitle>Giỏ hàng</PageTitle>
+
+<div class="shop-page">
+
+    <h1>Giỏ hàng</h1>
+
+    @if (CartService.Items.Count == 0)
+    {
+        <div class="empty-cart">
+
+            <h2>Giỏ hàng đang trống</h2>
+
+            <p>
+                Bạn chưa thêm sản phẩm nào.
+            </p>
+
+            <a href="/products"
+               class="continue-button">
+                Tiếp tục mua sắm
+            </a>
+
+        </div>
+    }
+    else
+    {
+        <div class="cart-layout">
+
+            <div class="cart-items">
+
+                @foreach (var item in CartService.Items.ToList())
+                {
+                    <div class="cart-item">
+
+                        <img src="@item.Product.ImageUrl"
+                             alt="@item.Product.Name" />
+
+                        <div class="cart-product-info">
+
+                            <h3>
+                                @item.Product.Name
+                            </h3>
+
+                            <strong>
+                                @item.Product.Price.ToString("N0") đ
+                            </strong>
+
+                            <button class="remove-button"
+                                    @onclick="() => Remove(item)">
+                                Xóa
+                            </button>
+
+                        </div>
+
+                        <div class="quantity">
+
+                            <button @onclick="() => Decrease(item)">
+                                -
+                            </button>
+
+                            <span>
+                                @item.Quantity
+                            </span>
+
+                            <button @onclick="() => Increase(item)">
+                                +
+                            </button>
+
+                        </div>
+
+                        <strong class="item-total">
+
+                            @((item.Product.Price * item.Quantity)
+                                .ToString("N0")) đ
+
+                        </strong>
+
+                    </div>
+                }
+
+            </div>
+
+            <div class="cart-summary">
+
+                <h2>Đơn hàng</h2>
+
+                <div class="summary-row">
+
+                    <span>Số lượng</span>
+
+                    <span>
+                        @CartService.GetTotalQuantity()
+                    </span>
+
+                </div>
+
+                <div class="summary-row total">
+
+                    <span>Tổng cộng</span>
+
+                    <span>
+                        @CartService.GetTotalPrice().ToString("N0") đ
+                    </span>
+
+                </div>
+
+                <button class="checkout-button">
+                    Thanh toán
+                </button>
+
+            </div>
+
+        </div>
+    }
+
+</div>
+
+@code {
+
+    private void Increase(CartItem item)
+    {
+        CartService.IncreaseQuantity(item);
+    }
+
+    private void Decrease(CartItem item)
+    {
+        CartService.DecreaseQuantity(item);
+    }
+
+    private void Remove(CartItem item)
+    {
+        CartService.RemoveItem(item);
+    }
+
+}

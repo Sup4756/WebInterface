@@ -1,0 +1,254 @@
+﻿@page "/products"
+
+@using ShopInterface1.Models
+@using ShopInterface1.Services
+
+@inject ProductService ProductService
+@inject CartService CartService
+
+<PageTitle>Sản phẩm | MYSHOP</PageTitle>
+
+<div class="products-page">
+
+    <div class="products-header">
+        <div>
+            <span class="eyebrow">COLLECTION</span>
+            <h1>Khám phá sản phẩm</h1>
+            <p>Tìm đôi sneaker phù hợp với phong cách của bạn.</p>
+        </div>
+
+        <div class="product-count">
+            @FilteredProducts.Count sản phẩm
+        </div>
+    </div>
+
+    <div class="shop-toolbar">
+
+        <div class="search-box">
+            <span>⌕</span>
+
+            <input type="text"
+                   placeholder="Tìm kiếm sản phẩm..."
+                   @bind="searchText"
+                   @bind:event="oninput" />
+        </div>
+
+        <select @bind="sortOption">
+            <option value="default">Sắp xếp mặc định</option>
+            <option value="price-low">Giá thấp → cao</option>
+            <option value="price-high">Giá cao → thấp</option>
+            <option value="name">Tên A → Z</option>
+        </select>
+
+    </div>
+
+    @if (PagedProducts.Count == 0)
+    {
+        <div class="no-products">
+            <h2>Không tìm thấy sản phẩm</h2>
+            <p>Thử tìm kiếm bằng từ khóa khác.</p>
+        </div>
+    }
+    else
+    {
+        <div class="modern-product-grid">
+
+            @foreach (var product in PagedProducts)
+            {
+                <article class="modern-product-card">
+
+                    <a href="/products/@product.Id"
+                       class="product-image-wrapper">
+
+                        <img src="@product.ImageUrl"
+                             alt="@product.Name" />
+
+                        <span class="product-badge">
+                            NEW
+                        </span>
+
+                    </a>
+
+                    <div class="modern-product-info">
+
+                        <span class="product-category">
+                            SNEAKER
+                        </span>
+
+                        <a href="/products/@product.Id"
+                           class="product-name">
+                            @product.Name
+                        </a>
+
+                        <p>
+                            @product.Description
+                        </p>
+
+                        <div class="product-bottom">
+
+                            <strong>
+                                @product.Price.ToString("N0") đ
+                            </strong>
+
+                            <button title="Thêm vào giỏ"
+                                    @onclick="() => AddToCart(product)">
+                                +
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </article>
+            }
+
+        </div>
+
+        @if (TotalPages > 1)
+        {
+            <div class="pagination">
+
+                <button class="pagination-arrow"
+                        disabled="@(currentPage == 1)"
+                        @onclick="PreviousPage">
+                    ←
+                </button>
+
+                @for (int i = 1; i <= TotalPages; i++)
+                {
+                    int pageNumber = i;
+
+                    <button class="@(currentPage == pageNumber ? "page-number active" : "page-number")"
+                            @onclick="() => GoToPage(pageNumber)">
+                        @pageNumber
+                    </button>
+                }
+
+                <button class="pagination-arrow"
+                        disabled="@(currentPage == TotalPages)"
+                        @onclick="NextPage">
+                    →
+                </button>
+
+            </div>
+        }
+
+        <div class="pagination-info">
+            Trang @currentPage / @TotalPages
+        </div>
+    }
+
+</div>
+
+@code {
+
+    private List<Product> products = new();
+
+    private string searchText = "";
+    private string sortOption = "default";
+
+    private int currentPage = 1;
+
+    // Muốn 9 sản phẩm / trang thì đổi thành 9.
+    private const int PageSize = 9;
+
+
+    protected override void OnInitialized()
+    {
+        products = ProductService.GetProducts();
+    }
+
+
+    private List<Product> FilteredProducts
+    {
+        get
+        {
+            IEnumerable<Product> result = products;
+
+            if (!string.IsNullOrWhiteSpace(searchText))
+            {
+                result = result.Where(p =>
+                    p.Name.Contains(
+                        searchText,
+                        StringComparison.OrdinalIgnoreCase
+                    )
+                );
+            }
+
+            result = sortOption switch
+            {
+                "price-low" =>
+                    result.OrderBy(p => p.Price),
+
+                "price-high" =>
+                    result.OrderByDescending(p => p.Price),
+
+                "name" =>
+                    result.OrderBy(p => p.Name),
+
+                _ => result
+            };
+
+            return result.ToList();
+        }
+    }
+
+
+    private List<Product> PagedProducts
+    {
+        get
+        {
+            // Nếu tìm kiếm làm số trang giảm đi,
+            // đưa currentPage về trang hợp lệ.
+            if (currentPage > TotalPages)
+            {
+                currentPage = Math.Max(1, TotalPages);
+            }
+
+            return FilteredProducts
+                .Skip((currentPage - 1) * PageSize)
+                .Take(PageSize)
+                .ToList();
+        }
+    }
+
+
+    private int TotalPages =>
+        (int)Math.Ceiling(
+            FilteredProducts.Count / (double)PageSize
+        );
+
+
+    private void GoToPage(int page)
+    {
+        if (page >= 1 && page <= TotalPages)
+        {
+            currentPage = page;
+        }
+    }
+
+
+    private void PreviousPage()
+    {
+        if (currentPage > 1)
+        {
+            currentPage--;
+        }
+    }
+
+
+    private void NextPage()
+    {
+        if (currentPage < TotalPages)
+        {
+            currentPage++;
+        }
+    }
+
+
+    private void AddToCart(Product product)
+    {
+        CartService.AddToCart(product);
+    }
+
+}
